@@ -11,7 +11,11 @@ class UserController {
       const user = await this.userService.register(email, password);
       res.status(201).json({ message: 'User created successfully' });
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      if (error.code === 'USER_EXISTS') {
+        res.status(400).json({ error: 'User already exists' });
+      } else {
+        res.status(400).json({ error: error.message });
+      }
     }
   }
 
@@ -21,7 +25,13 @@ class UserController {
       const token = await this.userService.login(email, password);
       res.json({ token });
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      if (error.code === 'USER_NOT_FOUND') {
+        res.status(404).json({ error: 'User not found' });
+      } else if (error.code === 'INVALID_PASSWORD') {
+        res.status(400).json({ error: 'Invalid password' });
+      } else {
+        res.status(400).json({ error: error.message });
+      }
     }
   }
 
