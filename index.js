@@ -1,27 +1,57 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-const cors = require("cors");
+require('dotenv').config();
+const express = require('express');
+const axios = require('axios');
+const cors = require('cors');
+const md5 = require('md5');
 
-dotenv.config();
+//  agregar auth
 const app = express();
+const PORT = 5000;
 
 app.use(cors());
 app.use(express.json());
 
-// conexion - mongo
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log("Connected to MongoDB"))
-    .catch((err) => console.log(err));
+app.get('/api/comics', async (req, res) => {
+  try {
+    const ts = new Date().getTime();
+    const hash = md5(ts + process.env.MARVEL_PRIVATE_KEY + process.env.MARVEL_API_KEY);
+    
+    const response = await axios.get(`https://gateway.marvel.com/v1/public/comics`, {
+      params: {
+        ts,
+        apikey: process.env.MARVEL_API_KEY,
+        hash,
+        limit: 20
+      }
+    });
 
-// rutas - por testear
-const authRoutes = require("./routes/authRoutes");
-const comicsRoutes = require("./routes/comicsRoutes");
-const userRoutes = require("./routes/userRoutes");
+    res.json(response.data.data.results);
+  } catch (error) {
+    console.error('Error fetching comics:', error);
+    res.status(500).json({ error: 'Error fetching comics' });
+  }
+});
 
-app.use("/api/auth", authRoutes);
-app.use("/api/comics", comicsRoutes);
-app.use("/api/users", userRoutes);
+app.get('/api/comics/:id', async (req, res) => {
+  try {
+    const ts = new Date().getTime();
+    const hash = md5(ts + process.env.MARVEL_PRIVATE_KEY + process.env.MARVEL_API_KEY);
+    
+    const response = await axios.get(`https://gateway.marvel.com/v1/public/comics/${req.params.id}`, {
+      params: {
+        ts,
+        apikey: process.env.MARVEL_API_KEY,
+        hash
+      }
+    });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    res.json(response.data.data.results[0]);
+  } catch (error) {
+    console.error('Error fetching comic:', error);
+    res.status(500).json({ error: 'Error fetching comic' });
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
