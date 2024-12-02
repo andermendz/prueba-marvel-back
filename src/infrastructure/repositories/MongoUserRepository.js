@@ -6,11 +6,19 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   name: { type: String, required: true },
-  identification: { type: String, required: true, unique: true },
+  identification: { 
+    type: String, 
+    required: true, 
+    unique: true,
+    match: /^[A-Za-z0-9]+$/,  // expresion regular solo letras y numeros
+    minlength: 5,  
+    maxlength: 20  
+  },
   favoriteComics: [{ type: Number }]
 });
 
 const UserModel = mongoose.model('User', UserSchema);
+
 class MongoUserRepository extends IUserRepository {
   async findById(id) {
     const user = await UserModel.findById(id);
