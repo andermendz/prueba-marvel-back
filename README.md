@@ -19,7 +19,7 @@
 
 3. Crear archivo `.env` en la raíz del proyecto con el siguiente contenido:
     ```env
-    MONGODB_URI=mongodb://localhost:27017/marvel-comics
+    MONGODB_URI=uri_de_mongo
     JWT_SECRET=tu_secreto_jwt
     MARVEL_API_KEY=tu_api_key_publica
     MARVEL_PRIVATE_KEY=tu_api_key_privada
