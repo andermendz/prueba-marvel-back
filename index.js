@@ -19,8 +19,11 @@ app.use(cors({
   origin: ['https://prueba-marvel-front.vercel.app', 'http://localhost:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  sameSite: 'None',
+  secure: true
 }));
+
 
 app.use(express.json());
 
