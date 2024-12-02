@@ -15,13 +15,7 @@ const PORT = 5000;
 connectDB();
 
 // middlewre
-app.use(cors({
-  origin: ['https://prueba-marvel-front.vercel.app', 'http://localhost:3000'],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
+app.use(cors());
 app.use(express.json());
 
 // iniciadas dependencias
