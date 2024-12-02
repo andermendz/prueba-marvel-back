@@ -7,7 +7,7 @@ class UserService {
     this.userRepository = userRepository;
   }
 
-  async register(email, password) {
+  async register(email, password, name, identification) {
     const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
       const error = new Error('Email already registered');
@@ -15,10 +15,18 @@ class UserService {
       throw error;
     }
 
+    const existingIdentification = await this.userRepository.findByIdentification(identification);
+    if (existingIdentification) {
+      const error = new Error('Identification already registered');
+      error.code = 'IDENTIFICATION_EXISTS';
+      throw error;
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User(null, email, hashedPassword);
+    const user = new User(null, email, hashedPassword, name, identification);
     return await this.userRepository.save(user);
-  }
+}
+
 
   async login(email, password) {
     const user = await this.userRepository.findByEmail(email);

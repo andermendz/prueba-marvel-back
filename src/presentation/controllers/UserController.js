@@ -7,17 +7,21 @@ class UserController {
 
   async register(req, res) {
     try {
-      const { email, password } = req.body;
-      const user = await this.userService.register(email, password);
+      const { email, password, name, identification } = req.body;
+      const user = await this.userService.register(email, password, name, identification);
       res.status(201).json({ message: 'User created successfully' });
     } catch (error) {
       if (error.code === 'USER_EXISTS') {
         res.status(400).json({ error: 'User already exists' });
+      } else if (error.code === 'IDENTIFICATION_EXISTS') {
+        res.status(400).json({ error: 'Identification already registered' });
       } else {
         res.status(400).json({ error: error.message });
       }
     }
-  }
+}
+
+
 
   async login(req, res) {
     try {
